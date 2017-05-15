@@ -1,0 +1,47 @@
+{
+  "name": "redux-d3-force",
+  "version": "0.1.0",
+  "description": "d3-force with redux",
+  "main": "dist/redux-d3-force.js",
+  "repository": "git@github.com:nikordaris/redux-d3-force.git",
+  "author": "Nikordaris",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src --out-dir lib --ignore __tests__",
+    "test:jest": "jest src/**/*.test.js --notify"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-jest": "^20.0.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "enzyme": "^2.8.2",
+    "eslint": "^3.19.0",
+    "eslint-config-react-app": "^0.6.2",
+    "eslint-plugin-flowtype": "^2.33.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^5.0.1",
+    "eslint-plugin-react": "^7.0.1",
+    "jest": "^20.0.1",
+    "jest-cli": "^20.0.1",
+    "jest-enzyme": "^3.1.1",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-redux": "^5.0.4",
+    "redux": "^3.6.0"
+  },
+  "peerDependencies": {
+    "react": "^15.5.4",
+    "react-redux": "^5.0.4",
+    "redux": "^3.6.0"
+  },
+  "dependencies": {
+    "hoist-non-react-statics": "^1.2.0",
+    "lodash": "^4.17.4"
+  }
+}
