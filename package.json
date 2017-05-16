@@ -8,12 +8,13 @@
   "license": "MIT",
   "scripts": {
     "build": "babel src --out-dir lib --ignore __tests__",
-    "test:jest": "concurrently --kill-others \"eslint src/**/*.js\" \"jest src/**/*.test.js --notify\" ",
+    "test": "concurrently --kill-others \"eslint src/**/*.js\" \"jest src/**/*.test.js --notify\" ",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "deploy-storybook": "storybook-to-ghpages"
   },
   "jest": {
+    "rootDir": "src",
     "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js"
   },
   "devDependencies": {
@@ -24,6 +25,7 @@
     "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.1",
     "babel-preset-es2015": "^6.24.1",
+    "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "concurrently": "^3.4.0",
@@ -32,8 +34,10 @@
     "eslint-config-react-app": "^0.6.2",
     "eslint-plugin-flowtype": "^2.33.0",
     "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jest": "^20.0.1",
     "eslint-plugin-jsx-a11y": "^5.0.1",
     "eslint-plugin-react": "^7.0.1",
+    "flow-bin": "^0.46.0",
     "jest": "^20.0.1",
     "jest-cli": "^20.0.1",
     "jest-enzyme": "^3.1.1",
