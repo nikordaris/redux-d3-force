@@ -8,18 +8,25 @@
   "license": "MIT",
   "scripts": {
     "build": "babel src --out-dir lib --ignore __tests__",
-    "test:jest": "jest src/**/*.test.js --notify"
+    "test:jest": "concurrently --kill-others \"eslint src/**/*.js\" \"jest src/**/*.test.js --notify\" ",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "deploy-storybook": "storybook-to-ghpages"
   },
   "jest": {
     "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js"
   },
   "devDependencies": {
+    "@kadira/storybook": "^2.21.0",
+    "@kadira/storybook-deployer": "^1.2.0",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.1",
+    "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "concurrently": "^3.4.0",
     "enzyme": "^2.8.2",
     "eslint": "^3.19.0",
     "eslint-config-react-app": "^0.6.2",
@@ -42,6 +49,7 @@
   },
   "dependencies": {
     "hoist-non-react-statics": "^1.2.0",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "redux-act-async": "^1.6.0"
   }
 }
