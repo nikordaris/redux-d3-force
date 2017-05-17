@@ -54,6 +54,7 @@
   "dependencies": {
     "hoist-non-react-statics": "^1.2.0",
     "lodash": "^4.17.4",
+    "react-pan-and-zoom-hoc": "^1.0.3",
     "redux-act-async": "^1.6.0"
   }
 }
