@@ -28,6 +28,10 @@ export default class ReduxForceGraph extends Component {
     getLinkId?: () => void,
   };
 
+  componentWillReceiveProps(props) {
+    const { nodes, links } = props;
+  }
+
   render() {
     const { getGraphState, graph, ...rest } = this.props;
     const ConnectedForceGraph = connect(state => ({
