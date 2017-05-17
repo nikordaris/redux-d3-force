@@ -1,11 +1,11 @@
 // @flow
 import React, { Component } from 'react';
-import getDisplayName from './util/getDisplayName';
+import { getDisplayName } from './utils';
 
 export default (options) => {
-  return (WrappedComponent) => {
+  return WrappedComponent => {
     class ForceGraph extends Component {
-      static displayName = `Form(${getDisplayName(WrappedComponent)})`;
+      static displayName = `ForceGraph(${getDisplayName(WrappedComponent)})`;
       static WrappedComponent = WrappedComponent;
       props: {
         destroyOnUnmount: boolean,

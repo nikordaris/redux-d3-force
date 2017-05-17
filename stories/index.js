@@ -16,5 +16,7 @@ addDecorator((getStory) => (
 
 storiesOf('ForceGraph', module)
   .add('to Storybook', () => (
-    <p>TODO</p>
+    <div>
+      
+    </div>
   ));
