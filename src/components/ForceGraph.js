@@ -22,17 +22,20 @@ export default class ReduxForceGraph extends Component {
   };
 
   props: {
-    graphName: string,
+    graph: string,
     getGraphState?: () => void,
     getNodeId?: () => void,
     getLinkId?: () => void,
   };
 
   render() {
-    const { getGraphState, getNodeId, getLinkId } = this.props;
-    const ConnectedForceGraph = connect(state => ({nodes: getGraphState(state)}))(ForceGraph);
+    const { getGraphState, graph, ...rest } = this.props;
+    const ConnectedForceGraph = connect(state => ({
+      nodes: getGraphNodes(graph, getGraphState)(state),
+      links: getGraphLinks(graph, getGraphState)(state),
+    }))(ForceGraph);
     return (
-      <ConnectedForceGraph {...this.props}/>
+      <ConnectedForceGraph {...rest}/>
     )
   }
 }
