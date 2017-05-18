@@ -1,29 +1,26 @@
 import { createAction, createReducer } from 'redux-act';
+import { actionCreatorId } from '../utils';
 
-const PREFIX = '@reduxForceGraph';
-const createId = (id) => `${PREFIX}/${id}`;
 const graphPayloadReducer = (graph, payload) => payload;
 const createGraphAction = (
   id,
   payloadReducer = graphPayloadReducer,
   metaReducer = (graph => ({graph}))
 ) => createAction(
-  createId(id),
+  actionCreatorId(id),
   payloadReducer,
   metaReducer
 );
 const createGraphItemAction = (id) => createAction(
-  createId(id),
+  actionCreatorId(id),
   graphPayloadReducer,
   (graph, item, getId = ((item) => item.id)) => ({graph, getId})
 );
 const updateGraphState = (state, graph, payload) => ({
   ...state,
-  graphs: {
-    [graph]: {
-      ...state.graphs[graph],
-      ...payload
-    }
+  [graph]: {
+    ...state[graph],
+    ...payload
   }
 })
 
@@ -37,7 +34,8 @@ export const initGraph = createGraphAction(
     nodes,
     links,
     initialNodes: nodes,
-    initialLinks: links
+    initialLinks: links,
+    runSimulation: true
   })
 );
 
@@ -62,12 +60,13 @@ const addItem = (item, list = []) => [...list, item];
 const removeItem = (item, list = [], getId) => list.filter(i => getId(i) !== getId(item));
 const updateItem = (item, list = [], getId) => [...removeItem(item, list, getId), item];
 
-const INITIAL_STATE = {graphs: {}};
+const INITIAL_STATE = {};
 
 export default createReducer({
   [initGraph]: (state, payload, {graph}) => updateGraphState(state, graph, payload),
   [startSimulation]: (state, payload, {graph}) => updateGraphState(state, graph, {
-    simulationRunning: true
+    simulationRunning: true,
+    runSimulation: false,
   }),
   [stopSimulation]: (state, payload, {graph}) => updateGraphState(state, graph, {
     simulationRunning: false
@@ -75,25 +74,25 @@ export default createReducer({
   [updateGraph]: (state, payload, {graph}) => updateGraphState(state, graph, {
     ...payload,
     // Prevent overwriting initial nodes & links
-    initialNodes: state.graphs[graph].initialNodes,
-    initialLinks: state.graphs[graph].initialLinks
+    initialNodes: state[graph].initialNodes,
+    initialLinks: state[graph].initialLinks
   }),
   [addNode]: (state, node, {graph}) => updateGraphState(state, graph, {
-    nodes: addItem(node, state.graphs[graph].nodes),
+    nodes: addItem(node, state[graph].nodes),
   }),
   [deleteNode]: (state, node, {graph, getId}) => updateGraphState(state, graph, {
-    nodes: removeItem(node, state.graphs[graph].nodes, getId),
+    nodes: removeItem(node, state[graph].nodes, getId),
   }),
   [updateNode]: (state, node, {graph, getId}) => updateGraphState(state, graph, {
-    nodes: updateItem(node, state.graphs[graph].nodes, getId),
+    nodes: updateItem(node, state[graph].nodes, getId),
   }),
   [addLink]: (state, link, {graph}) => updateGraphState(state, graph, {
-    links: addItem(link, state.graphs[graph].links),
+    links: addItem(link, state[graph].links),
   }),
   [deleteLink]: (state, link, {graph, getId}) => updateGraphState(state, graph, {
     links: removeItem(link, state.graph[graph].links, getId),
   }),
   [updateLink]: (state, link, {graph, getId}) => updateGraphState(state, graph, {
-    links: updateItem(link, state.graphs[graph].links, getId),
+    links: updateItem(link, state[graph].links, getId),
   }),
 }, INITIAL_STATE);

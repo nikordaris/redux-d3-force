@@ -25,9 +25,9 @@ export const getGraphInitialLinks = (
 export const isSimulationRunning = (
   graph,
   getForceGraphState = _getForceGraphState
-) => state => get(getForceGraphState(state), `graphs.${graph}.simulation.running`);
+) => state => get(getForceGraphState(state), `graphs.${graph}.simulationRunning`);
 
-export const isSimulationDone = (
+export const shouldRunSimulation = (
   graph,
   getForceGraphState = _getForceGraphState
-) => state => get(getForceGraphState(state), `graphs.${graph}.simulation.done`);
+) => state => get(getForceGraphState(state), `graphs.${graph}.runSimulation`)
