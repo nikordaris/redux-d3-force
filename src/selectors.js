@@ -1,6 +1,6 @@
-import { get } from 'lodash';
+import { get } from "lodash";
 
-const _getForceGraphState = state => get(state, 'forceGraph');
+const _getForceGraphState = state => get(state, "forceGraph");
 
 export const getGraphNodes = (
   graph,
@@ -25,9 +25,10 @@ export const getGraphInitialLinks = (
 export const isSimulationRunning = (
   graph,
   getForceGraphState = _getForceGraphState
-) => state => get(getForceGraphState(state), `graphs.${graph}.simulationRunning`);
+) => state =>
+  get(getForceGraphState(state), `graphs.${graph}.simulationRunning`);
 
 export const shouldRunSimulation = (
   graph,
   getForceGraphState = _getForceGraphState
-) => state => get(getForceGraphState(state), `graphs.${graph}.runSimulation`)
+) => state => get(getForceGraphState(state), `graphs.${graph}.runSimulation`);

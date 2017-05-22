@@ -1,9 +1,9 @@
 // @flow
-import React, { Component } from 'react';
-import { getDisplayName } from './utils';
+import React, { Component } from "react";
+import { getDisplayName } from "./utils";
 
-export default (options) => {
-  return WrappedComponent => {
+export default (options: {}) => {
+  return (WrappedComponent: Component<*, *, *>) => {
     class ForceGraph extends Component {
       static displayName = `ForceGraph(${getDisplayName(WrappedComponent)})`;
       static WrappedComponent = WrappedComponent;
@@ -17,12 +17,12 @@ export default (options) => {
       };
 
       getChildContext() {
-          return {
-            _reduxForceGraph: {
-              ...this.props,
-            }
+        return {
+          _reduxForceGraph: {
+            ...this.props
           }
-        }
+        };
+      }
     }
-  }
+  };
 };
