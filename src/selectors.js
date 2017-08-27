@@ -1,6 +1,6 @@
 import { get } from "lodash";
 
-const _getForceGraphState = state => get(state, "forceGraph");
+const _getForceGraphState = state => get(state, 'forceGraph');
 
 export const getGraphNodes = (
   graph,

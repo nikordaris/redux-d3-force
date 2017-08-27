@@ -1,6 +1,5 @@
-import * as actions from './reducer';
-import * as components from './components';
+export * from './reducer';
+export * from './components';
+export * from './selectors';
 
 export reducer from './reducer';
-export {...actions};
-export {...components};

@@ -56,10 +56,14 @@ export const stopSimulation = createGraphAction('STOP_SIMULATION');
 const addItem = (item, list = []) => [...list, item];
 const removeItem = (item, list = [], getId) =>
   list.filter(i => getId(i) !== getId(item));
-const updateItem = (item, list = [], getId) => [
-  ...removeItem(item, list, getId),
-  item
-];
+const updateItem = (item, list = [], getId) => {
+  const itemIdx = list.findIndex(i => getId(i) !== getId(item));
+  if (itemIdx >= 0) {
+    return [...list.splice(itemIdx, 1, item)];
+  }
+
+  return [...list, item];
+};
 
 const INITIAL_STATE = {};
 

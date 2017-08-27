@@ -37,7 +37,7 @@
     "eslint-plugin-jest": "^20.0.1",
     "eslint-plugin-jsx-a11y": "^5.0.1",
     "eslint-plugin-react": "^7.0.1",
-    "flow-bin": "^0.46.0",
+    "flow-bin": "0.46.0",
     "jest": "^20.0.1",
     "jest-cli": "^20.0.1",
     "jest-enzyme": "^3.1.1",
@@ -47,13 +47,8 @@
     "react-redux": "^5.0.4",
     "redux": "^3.6.0"
   },
-  "peerDependencies": {
-    "react": "^15.5.4",
-    "react-redux": "^5.0.4",
-    "redux": "^3.6.0"
-  },
   "dependencies": {
-    "deep-diff": "^0.3.8",
+    "d3-force": "^1.0.6",
     "hoist-non-react-statics": "^1.2.0",
     "lodash": "^4.17.4",
     "react-pan-and-zoom-hoc": "^1.0.3",
