@@ -1,3 +1,6 @@
+// @flow
+import { get, reduce, forEach, isFunction, isEqual } from 'lodash';
+
 import {
   forceSimulation,
   forceLink,
@@ -24,28 +27,116 @@ const ALPHA_OPTIONS = [
   'velocityDecay'
 ];
 
+export const DEFAULT_FORCE_OPTIONS = {
+  charge: {
+    force: forceManyBody
+  },
+  center: {
+    force: forceCenter,
+    options: ({ height = 0, width = 0 }) => ({
+      x: width / 2,
+      y: height / 2
+    })
+  },
+  collide: {
+    force: forceCollide,
+    options: {
+      radius: ({ radius }) => radius + 3
+    }
+  },
+  link: {
+    force: forceLink,
+    options: {
+      id: getLinkId
+    }
+  }
+}
+
+function reduceThunk(thunk, args, iteratee, accumulator) {
+  let obj = thunk;
+  if (isFunction(thunk)) {
+    obj = thunk(args);
+  }
+
+  return reduce(obj, iteratee, accumulator);
+}
+
+function _applyForces(simulation: any, forces: D3Forces, options: D3ForceOptions) {
+  return reduce(forces, (changed, { force, options: forceOptions }, name) => {
+    if (!simulation.force(name)) {
+      simulation.force(name, force);
+    }
+
+    return reduceThunk(forceOptions, options, (changedInner, value, prop) => {
+      if (!isEqual(simulation.force(name)[prop](), value)) {
+        simulation.force(name)[prop](value);
+        return true;
+      }
+      return changedInner;
+    }, changed);
+  }, false);
+}
+
 export class Simulation {
   simulation: any;
-  shouldRun: boolean;
 
-  constructor(options) {
+  constructor(options: D3ForceOptions) {
     this.simulation = forceSimulation();
     this.simulation.strength = {};
   }
 
-  setCenterForce(options: any = {}) {}
+  applyForces(options: D3ForceOptions) {
+    const { forces = {} } = options;
 
-  setManyBodyChargeForce(options: any = {}) {}
+    let changed = reduce(DEFAULT_FORCE_OPTIONS, (changed, { force, options: forceOptions }, key) => {
+      if (!this.simulation.force(key)) {
+        this.simulation.force(key, force);
+      }
 
-  setCollisionForce(options: any = {}) {}
+      return reduceThunk(forceOptions, options, (value, key) => {
 
-  setLinkForce(options: any = {}) {}
+      }, changed);
+    }, false);
+  }
 
-  setAxisForce(options: any = {}) {}
+  updateCenterForce(options: D3ForceOptions) {
+    if (!this.simulation.force('center')) {
+      this.simulation.force('center', forceCenter());
+    }
 
-  updateSimulation(options: any = {}) {
+    const { height = 0, width = 0 } = options;
+    const centerOptions = get(options, 'forces.center', { x: width / 2, y: height / 2 });
+    let changed = false;
+    if (this.simulation.force('center').x() !== centerOptions.x) {
+      changed = true;
+      this.simulation.force('center').x(centerOptions.x);
+    }
+
+    if (this.simulation.force('center').y() !== centerOptions.y) {
+      changed = true;
+      this.simulation.force('center').y(centerOptions.y);
+    }
+
+    return changed;
+  }
+
+  updateChargeForce(options: D3ForceOptions = {}) {
+    const chargeOptions = get(options, 'forces.charge', { force: forceManyBody() });
+    if (!this.simulation.force('charge')) {
+      this.simulation.force('charge', chargeOptions.force);
+    }
+
+  }
+
+  setCollisionForce(options: any = {}) { }
+
+  setLinkForce(options: any = {}) { }
+
+  setAxisForce(options: any = {}) { }
+
+  updateSimulation(options: D3ForceOptions = {}) {
     ALPHA_OPTIONS.forEach(
-      alpha => options[alpha] && this.simulation[alpha](options[alpha])
+      prop => options[prop] && this.simulation[prop](options[prop])
     );
   }
 
