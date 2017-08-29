@@ -33,15 +33,15 @@ export const DEFAULT_FORCE_OPTIONS = {
   },
   center: {
     force: forceCenter,
-    options: ({ height = 0, width = 0 }) => ({
-      x: width / 2,
-      y: height / 2
+    options: (opt: { height: number, width: number }) => ({
+      x: opt.width / 2,
+      y: opt.height / 2
     })
   },
   collide: {
     force: forceCollide,
     options: {
-      radius: ({ radius }) => radius + 3
+      radius: (node: { radius: number }) => node.radius + 3
     }
   },
   link: {
@@ -52,13 +52,8 @@ export const DEFAULT_FORCE_OPTIONS = {
   }
 }
 
-function reduceThunk(thunk, args, iteratee, accumulator) {
-  let obj = thunk;
-  if (isFunction(thunk)) {
-    obj = thunk(args);
-  }
-
-  return reduce(obj, iteratee, accumulator);
+function thunk(thunk, args) {
+  return isFunction(thunk) ? thunk(args) : thunk;
 }
 
 function _applyForces(simulation: any, forces: D3Forces, options: D3ForceOptions) {
@@ -67,7 +62,7 @@ function _applyForces(simulation: any, forces: D3Forces, options: D3ForceOptions
       simulation.force(name, force);
     }
 
-    return reduceThunk(forceOptions, options, (changedInner, value, prop) => {
+    return !simulation.force(name) && reduce(thunk(forceOptions, options), (changedInner, value, prop) => {
       if (!isEqual(simulation.force(name)[prop](), value)) {
         simulation.force(name)[prop](value);
         return true;
@@ -87,16 +82,9 @@ export class Simulation {
 
   applyForces(options: D3ForceOptions) {
     const { forces = {} } = options;
-
-    let changed = reduce(DEFAULT_FORCE_OPTIONS, (changed, { force, options: forceOptions }, key) => {
-      if (!this.simulation.force(key)) {
-        this.simulation.force(key, force);
-      }
-
-      return reduceThunk(forceOptions, options, (value, key) => {
-
-      }, changed);
-    }, false);
+    const defaultChanged = _applyForces(this.simulation, DEFAULT_FORCE_OPTIONS);
+    const forcesChanged = _applyForces(this.simulation, forces);
+    return defaultChanged || forcesChanged;
   }
 
   updateCenterForce(options: D3ForceOptions) {
@@ -128,11 +116,11 @@ export class Simulation {
 
   }
 
-  setCollisionForce(options: any = {}) { }
+  setCollisionForce(options: D3ForceOptions) { }
 
-  setLinkForce(options: any = {}) { }
+  setLinkForce(options: D3ForceOptions) { }
 
-  setAxisForce(options: any = {}) { }
+  setAxisForce(options: D3ForceOptions) { }
 
   updateSimulation(options: D3ForceOptions = {}) {
     ALPHA_OPTIONS.forEach(

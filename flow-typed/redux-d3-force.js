@@ -5,12 +5,20 @@ declare type D3Forces = {
   }
 }
 
+declare type D3Node = {
+  id: number | string,
+  radius: number,
+  fy: number,
+  fx: number
+}
+
 declare type D3ForceOptions = {
-  height: number,
-  width: number,
+  height?: number,
+  width?: number,
   alpha?: number,
   alphaDecay?: number,
   alphaMin?: number,
+  alphaTarget?: number,
   velocityDecay?: number,
   forces?: D3Forces
 }
@@ -18,6 +26,7 @@ declare type D3ForceOptions = {
 declare module 'redux-d3-force' {
   declare module.exports: {
     D3ForceOptions: D3ForceOptions,
-      D3Forces: D3Forces
+    D3Forces: D3Forces,
+    D3Node: D3Node
   }
 }
