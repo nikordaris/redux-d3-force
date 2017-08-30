@@ -1,5 +1,5 @@
 // @flow
-import { get, reduce, forEach, isFunction, isEqual } from 'lodash';
+import { reduce, isFunction, isEqual, pick } from 'lodash';
 
 import {
   forceSimulation,
@@ -50,9 +50,9 @@ export const DEFAULT_FORCE_OPTIONS: D3Forces = {
       getLinkId: _getLinkId = getLinkId,
       data: { links }
     }: D3ForceOptions) => ({
-      id: _getLinkId,
-      links
-    })
+        id: _getLinkId,
+        links: links.map(link => pick(link, ['id', 'target', 'source', 'value']))
+      })
   },
   x: {
     force: forceX
@@ -117,7 +117,7 @@ export class Simulation {
         nodes.map(_getNodeId).sort()
       )
     ) {
-      this.simulation.nodes(nodes);
+      this.simulation.nodes(nodes.map(node => pick(node, ['id', 'radius', 'fx', 'fy'])));
     }
     this.applyForces(options);
   }
