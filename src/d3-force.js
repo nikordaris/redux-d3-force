@@ -27,49 +27,43 @@ const ALPHA_OPTIONS = [
   'velocityDecay'
 ];
 
-export const DEFAULT_FORCE_OPTIONS = {
+export const DEFAULT_FORCE_OPTIONS: D3Forces = {
   charge: {
     force: forceManyBody
   },
   center: {
     force: forceCenter,
-    options: (opt: { height: number, width: number }) => ({
-      x: opt.width / 2,
-      y: opt.height / 2
+    options: ({ height = 0, width = 0 }: D3ForceOptions) => ({
+      x: width / 2,
+      y: height / 2
     })
   },
   collide: {
     force: forceCollide,
     options: {
-      radius: (node: { radius: number }) => node.radius + 3
+      radius: ({ radius }: D3Node) => radius + 3
     }
   },
   link: {
     force: forceLink,
-    options: {
-      id: getLinkId
-    }
+    options: ({
+      getLinkId: _getLinkId = getLinkId,
+      data: { links }
+    }: D3ForceOptions) => ({
+      id: _getLinkId,
+      links
+    })
+  },
+  x: {
+    force: forceX
+  },
+  y: {
+    force: forceY
   }
-}
+};
 
 function thunk(thunk, args) {
   return isFunction(thunk) ? thunk(args) : thunk;
-}
-
-function _applyForces(simulation: any, forces: D3Forces, options: D3ForceOptions) {
-  return reduce(forces, (changed, { force, options: forceOptions }, name) => {
-    if (!simulation.force(name)) {
-      simulation.force(name, force);
-    }
-
-    return !simulation.force(name) && reduce(thunk(forceOptions, options), (changedInner, value, prop) => {
-      if (!isEqual(simulation.force(name)[prop](), value)) {
-        simulation.force(name)[prop](value);
-        return true;
-      }
-      return changedInner;
-    }, changed);
-  }, false);
 }
 
 export class Simulation {
@@ -82,50 +76,50 @@ export class Simulation {
 
   applyForces(options: D3ForceOptions) {
     const { forces = {} } = options;
-    const defaultChanged = _applyForces(this.simulation, DEFAULT_FORCE_OPTIONS);
-    const forcesChanged = _applyForces(this.simulation, forces);
-    return defaultChanged || forcesChanged;
+    return reduce(
+      { ...DEFAULT_FORCE_OPTIONS, ...forces },
+      (changed, { force, options: forceOptions }, name) => {
+        if (!this.simulation.force(name)) {
+          this.simulation.force(name, force);
+        }
+
+        return (
+          this.simulation.force(name) &&
+          forceOptions &&
+          reduce(
+            thunk(forceOptions, options),
+            (changedInner, value, prop) => {
+              if (!isEqual(this.simulation.force(name)[prop](), value)) {
+                this.simulation.force(name)[prop](value);
+                return true;
+              }
+              return changedInner;
+            },
+            changed
+          )
+        );
+      },
+      false
+    );
   }
 
-  updateCenterForce(options: D3ForceOptions) {
-    if (!this.simulation.force('center')) {
-      this.simulation.force('center', forceCenter());
-    }
-
-    const { height = 0, width = 0 } = options;
-    const centerOptions = get(options, 'forces.center', { x: width / 2, y: height / 2 });
-    let changed = false;
-    if (this.simulation.force('center').x() !== centerOptions.x) {
-      changed = true;
-      this.simulation.force('center').x(centerOptions.x);
-    }
-
-    if (this.simulation.force('center').y() !== centerOptions.y) {
-      changed = true;
-      this.simulation.force('center').y(centerOptions.y);
-    }
-
-    return changed;
-  }
-
-  updateChargeForce(options: D3ForceOptions = {}) {
-    const chargeOptions = get(options, 'forces.charge', { force: forceManyBody() });
-    if (!this.simulation.force('charge')) {
-      this.simulation.force('charge', chargeOptions.force);
-    }
-
-  }
-
-  setCollisionForce(options: D3ForceOptions) { }
-
-  setLinkForce(options: D3ForceOptions) { }
-
-  setAxisForce(options: D3ForceOptions) { }
-
-  updateSimulation(options: D3ForceOptions = {}) {
+  updateSimulation(options: D3ForceOptions) {
+    const {
+      data: { nodes = [] } = { nodes: [] },
+      getNodeId: _getNodeId = getNodeId
+    } = options;
     ALPHA_OPTIONS.forEach(
       prop => options[prop] && this.simulation[prop](options[prop])
     );
+    if (
+      !isEqual(
+        this.simulation.nodes.map(_getNodeId).sort(),
+        nodes.map(_getNodeId).sort()
+      )
+    ) {
+      this.simulation.nodes(nodes);
+    }
+    this.applyForces(options);
   }
 
   runSimulation() {
